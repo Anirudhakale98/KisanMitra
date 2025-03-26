@@ -1,14 +1,17 @@
 import { Router } from "express";
-import { requireAuth, requireRole } from "../middlewares/auth.js";
-import { createUser, getUserProfile } from "../controllers/users.controller.js";
+import { registerUser, loginUser, logoutUser, getMe, getUser } from "../controllers/users.controller.js";
+import { verifyJWT } from "../middlewares/auth.middlewares.js";
+
 
 const router = Router();
 
-router.post("/create-user", requireAuth, createUser);
-router.get("/profile", requireAuth, getUserProfile);
 
-router.get("/admin", requireAuth, requireRole("admin"), (req, res) => {
-    res.status(200).json(new ApiResponse(200, null, "Welcome, Admin!"));
-});
+router.route("/register").post(registerUser);
+router.route("/login").post(loginUser);
 
-export default router;
+// secured routes
+router.route("/me").get(verifyJWT(["farmer","admin","vet"]), getMe);
+router.route("/:id").get(verifyJWT(["farmer","admin","vet"]), getUser);
+router.route("/logout").post(verifyJWT(["farmer","admin","vet"]), logoutUser);
+
+export default router;  
