@@ -1,11 +1,12 @@
-import {View, Text} from 'react-native'
-import React from 'react'
+import { useAuth } from "@clerk/clerk-expo";
+import { Redirect } from "expo-router";
 
-const Index = () => {
-    return (
-        <View>
-            <Text>Index</Text>
-        </View>
-    )
-}
-export default Index
+const Page = () => {
+  const { isSignedIn } = useAuth();
+
+  if (isSignedIn) return <Redirect href="/(root)/(tabs)/home" />;
+
+  return <Redirect href="/(auth)/welcome" />;
+};
+
+export default Page;
